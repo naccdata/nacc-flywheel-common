@@ -2,12 +2,11 @@
 
 import logging
 from typing import Dict, List, Optional, Set, Tuple
+
+import yaml
+from common.admin import AdminClient
 from flywheel import Client
 from pydantic import AliasChoices, BaseModel, Field, RootModel, field_validator
-import yaml
-
-
-from common.admin import AdminClient
 
 log = logging.getLogger(__name__)
 
@@ -113,17 +112,18 @@ class CenterMapInfo(BaseModel):
             The center info for the center. None if no info is found.
         """
         return self.centers.get(adcid, None)
-    
+
     def group_ids(self, center_ids: Optional[List[int]] = None) -> Set[str]:
         if not center_ids:
             center_ids = self.centers.keys()
 
         return {
-            center.group for center in [
+            center.group
+            for center in [
                 self.centers.get(key) for key in center_ids if key in self.centers
             ]
         }
-    
+
     def active_group_ids(self, center_ids: Optional[List[int]] = None) -> Set[str]:
         if not center_ids:
             center_ids = self.centers.keys()
@@ -138,7 +138,7 @@ class CenterMapInfo(BaseModel):
 
     @classmethod
     def create(cls, center_list: CenterList) -> "CenterMapInfo":
-        """Creates a center map from the center list"""
+        """Creates a center map from the center list."""
         return CenterMapInfo(
             centers={center_info.adcid: center_info for center_info in center_list}
         )
@@ -160,7 +160,7 @@ class CenterClient:
         return CenterList.model_validate(centers)
 
     def upload_center_list(self, center_list: CenterList) -> None:
-        """Uploads the center list"""
+        """Uploads the center list."""
         self.admin_client.upload_config_file(
             filename=self.__center_filename,
             data=center_list.model_dump(by_alias=True, exclude_none=True),
@@ -177,7 +177,8 @@ class CenterClient:
         return self.admin_client.get_admin_file(self.__center_filename)
 
     def create_centers(self) -> str:
-        """Runs the center management gear to create/update the center groups and permissions.
+        """Runs the center management gear to create/update the center groups
+        and permissions.
 
         Returns:
           the job ID
@@ -187,7 +188,8 @@ class CenterClient:
     def get_center_info(self) -> CenterMapInfo:
         """Returns the center info from the metadata project.
 
-        Note this may be independent of the centers file if the center management gear has not be run since the last upload.
+        Note this may be independent of the centers file if the center
+        management gear has not be run since the last upload.
         """
         metadata = self.admin_client.get_metadata_project()
         metadata = metadata.reload()

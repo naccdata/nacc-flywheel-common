@@ -1,6 +1,8 @@
 from typing import List, Optional, Tuple
+
 from flywheel import ViewBuilder
 from pydantic import BaseModel
+
 
 class ColumnModel(BaseModel):
     data_key: str
@@ -9,26 +11,30 @@ class ColumnModel(BaseModel):
     def as_tuple(self) -> Tuple[str, str]:
         return (self.data_key, self.label)
 
-def make_builder(*,
-                 label: str,
-                 description: str,
-                 columns: List[ColumnModel],
-                 container: str = 'subject',
-                 filename: Optional[str] = None,
-                 filter_str: Optional[str] = None,
-                 match: str = 'all') -> ViewBuilder:
+
+def make_builder(
+    *,
+    label: str,
+    description: str,
+    columns: List[ColumnModel],
+    container: str = "subject",
+    filename: Optional[str] = None,
+    filter_str: Optional[str] = None,
+    match: str = "all",
+) -> ViewBuilder:
     """Factory to create a ViewBuilder using the ColumnModel."""
 
-    builder = ViewBuilder(label=label,
-                          description=description,
-                          columns=[column.as_tuple() for column in columns],
-                          container=container,
-                          filename=filename,
-                          filter=filter_str,
-                          match=match,
-                          process_files=False,
-                          include_ids=False,
-                          include_labels=False,
-                          error_column=False)
-    return builder.missing_data_strategy('drop-row')
-
+    builder = ViewBuilder(
+        label=label,
+        description=description,
+        columns=[column.as_tuple() for column in columns],
+        container=container,
+        filename=filename,
+        filter=filter_str,
+        match=match,
+        process_files=False,
+        include_ids=False,
+        include_labels=False,
+        error_column=False,
+    )
+    return builder.missing_data_strategy("drop-row")
