@@ -1,0 +1,39 @@
+[GLOBAL]
+pants_version = "2.24.2"
+backend_packages.add = [
+  "pants.backend.build_files.fmt.ruff",  
+  "pants.backend.python",
+  "pants.backend.python.lint.docformatter",
+  "pants.backend.experimental.python.lint.ruff.check",
+  "pants.backend.experimental.python.lint.ruff.format",
+  "pants.backend.python.typecheck.mypy",
+  "pants.backend.shell"
+]
+pants_ignore = [
+    '.devcontainer/**',
+    '.vscode/**',
+    '*venv/*'
+]
+
+[source]
+root_patterns = ["/"]
+
+[python]
+interpreter_constraints = ["==3.11.*"]
+enable_resolves = true
+
+[python.resolves]
+python-default = "python-default.lock"
+
+[python-bootstrap]
+#  https://www.pantsbuild.org/docs/python-interpreter-compatibility#changing-the-interpreter-search-path.
+search_path = ["<PATH>", "<PYENV>"]
+
+[python-infer]
+use_rust_parser = true
+
+[update-build-files]
+formatter="ruff"
+
+[pytest]
+args=["-vv"]
